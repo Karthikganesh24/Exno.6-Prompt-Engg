@@ -1,6 +1,5 @@
-# Exno.6-Prompt-Engg
-# Date:
-# Register no:212223223003
+# Exno.6 Development of Python Code Compatible with Multiple AI Tools
+
 # Aim: 
 Development of Python Code Compatible with Multiple AI Tools
 # Algorithm: 
@@ -8,221 +7,231 @@ Write and implement Python code that integrates with multiple AI tools to automa
 ## Output:
 ## Objective
 The objective of this experiment is to develop Python code that integrates with multiple AI tools (via their APIs), automates the process of interacting with these APIs, compares the outputs from the AI tools, and generates actionable insights based on these comparisons.
+# Topic :
+College Management System
+# Output:
+College Management System Python Programs
+Here are Python implementations for several of the advanced college management system features you mentioned:
 
-## Software and Tools Used
-Python 3.x
-Requests library – for making HTTP API requests
-TextBlob library – for performing sentiment analysis
-Difflib module – for calculating similarity percentage
-OpenAI API (GPT-3)
-Cohere API
+1. Smart Assistant Integration (Chatbot)
+python
+import re
+from datetime import datetime
 
-## Python Code with Explanation
-Below is the complete Python code along with a step-by-step explanation for each section.
-~~~
-# Import required libraries
-import requests          # For making API requests
-from textblob import TextBlob  # For sentiment analysis
-import difflib           # For calculating similarity between outputs
-
-# =========================
-# CONFIGURATION SECTION
-# =========================
-
-# API endpoint for OpenAI
-OPENAI_API_URL = "https://api.openai.com/v1/completions"
-# Replace with your actual OpenAI API key
-OPENAI_API_KEY = "your_openai_api_key"
-
-# API endpoint for Cohere
-COHERE_API_URL = "https://api.cohere.ai/generate"
-# Replace with your actual Cohere API key
-COHERE_API_KEY = "your_cohere_api_key"
-
-# =========================
-# FUNCTION TO QUERY OPENAI
-# =========================
-
-def query_openai(prompt):
-    """
-    Sends a prompt to the OpenAI API and returns the output text.
-    """
-    headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
-    payload = {
-        "model": "text-davinci-003",  # OpenAI GPT-3 model
-        "prompt": prompt,
-        "max_tokens": 150              # Limit the output length
-    }
-    response = requests.post(OPENAI_API_URL, headers=headers, json=payload)
-    result = response.json()
-    return result['choices'][0]['text'].strip()
-
-# =========================
-# FUNCTION TO QUERY COHERE
-# =========================
-
-def query_cohere(prompt):
-    """
-    Sends a prompt to the Cohere API and returns the output text.
-    """
-    headers = {
-        "Authorization": f"Bearer {COHERE_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "model": "command-xlarge-nightly",  # Cohere's language model
-        "prompt": prompt,
-        "max_tokens": 150
-    }
-    response = requests.post(COHERE_API_URL, headers=headers, json=payload)
-    result = response.json()
-    return result['generations'][0]['text'].strip()
-
-# =========================
-# FUNCTION TO COMPARE OUTPUTS
-# =========================
-
-def compare_outputs(output1, output2):
-    """
-    Compares outputs from OpenAI and Cohere based on:
-    - Similarity percentage (using difflib)
-    - Sentiment polarity (using TextBlob)
-    Returns a dictionary with comparison results.
-    """
-    similarity = difflib.SequenceMatcher(None, output1, output2).ratio() * 100
-    sentiment1 = TextBlob(output1).sentiment.polarity
-    sentiment2 = TextBlob(output2).sentiment.polarity
-    return {
-        "similarity_percentage": similarity,
-        "sentiment_openai": sentiment1,
-        "sentiment_cohere": sentiment2
-    }
-
-# =========================
-# FUNCTION TO GENERATE INSIGHTS
-# =========================
-
-def generate_insights(comparison_data):
-    """
-    Generates insights from the comparison data.
-    For example:
-    - Whether outputs are similar
-    - Which output has more positive sentiment
-    """
-    insights = []
-    if comparison_data['similarity_percentage'] > 80:
-        insights.append("Outputs are very similar. Both AI tools are consistent.")
-    else:
-        insights.append("Outputs differ significantly. Models interpret differently.")
+class CollegeAssistant:
+    def __init__(self):
+        self.schedule = {
+            'tests': {
+                'Math': datetime(2023, 11, 15),
+                'Physics': datetime(2023, 11, 20)
+            },
+            'assignments': {
+                'CS101': {'due': datetime(2023, 11, 10), 'submitted': False}
+            },
+            'timetable': {
+                'Monday': ['Math 9-11', 'Physics Lab 2-4'],
+                'Tuesday': ['CS101 10-12', 'English 3-5']
+            }
+        }
     
-    if comparison_data['sentiment_openai'] > comparison_data['sentiment_cohere']:
-        insights.append("OpenAI output has a more positive sentiment.")
-    elif comparison_data['sentiment_openai'] < comparison_data['sentiment_cohere']:
-        insights.append("Cohere output has a more positive sentiment.")
-    else:
-        insights.append("Both outputs have similar sentiment polarity.")
+    def handle_query(self, query):
+        query = query.lower()
+        
+        # Next test query
+        if 'next test' in query:
+            next_test = min(self.schedule['tests'].items(), key=lambda x: x[1])
+            return f"Your next test is {next_test[0]} on {next_test[1].strftime('%B %d')}."
+        
+        # Assignment reminder
+        elif 'submit' in query or 'assignment' in query:
+            for course, details in self.schedule['assignments'].items():
+                if not details['submitted']:
+                    return f"Remember to submit {course} assignment by {details['due'].strftime('%B %d')}."
+            return "No pending assignments found."
+        
+        # Schedule query
+        elif 'schedule' in query or 'timetable' in query:
+            day = None
+            for d in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']:
+                if d in query:
+                    day = d.capitalize()
+                    break
+            if day:
+                return f"Your {day} schedule: {', '.join(self.schedule['timetable'][day])}"
+            return "Please specify a day (e.g., 'What's my schedule on Monday?')"
+        
+        return "I'm not sure I understand. You can ask about tests, assignments, or your schedule."
+
+# Example usage
+assistant = CollegeAssistant()
+print(assistant.handle_query("When is my next test?"))
+print(assistant.handle_query("Remind me to submit my assignment"))
+print(assistant.handle_query("What's my schedule on Tuesday?"))
+2. Predictive Analytics for Performance
+python
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+class PerformancePredictor:
+    def __init__(self):
+        # Sample dataset - in real scenario, load from database
+        data = {
+            'attendance': [90, 75, 60, 85, 45, 80, 95, 70],
+            'assignment_avg': [85, 70, 50, 80, 40, 75, 90, 65],
+            'midterm': [80, 65, 45, 75, 30, 70, 85, 60],
+            'passed': [1, 1, 0, 1, 0, 1, 1, 0]  # 1=passed, 0=failed
+        }
+        self.df = pd.DataFrame(data)
+        self.model = None
+        
+    def train_model(self):
+        X = self.df[['attendance', 'assignment_avg', 'midterm']]
+        y = self.df['passed']
+        
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+        
+        self.model = RandomForestClassifier()
+        self.model.fit(X_train, y_train)
+        
+        # Evaluate
+        y_pred = self.model.predict(X_test)
+        print(f"Model accuracy: {accuracy_score(y_test, y_pred):.2f}")
     
-    return insights
+    def predict_student(self, attendance, assignment_avg, midterm):
+        if not self.model:
+            self.train_model()
+            
+        prediction = self.model.predict([[attendance, assignment_avg, midterm]])
+        proba = self.model.predict_proba([[attendance, assignment_avg, midterm]])
+        
+        if prediction[0] == 1:
+            return f"High chance of passing ({proba[0][1]:.0%} probability)"
+        else:
+            return f"Risk of failing ({proba[0][0]:.0%} probability)"
 
-# =========================
-# MAIN AUTOMATION PIPELINE
-# =========================
+# Example usage
+predictor = PerformancePredictor()
+print(predictor.predict_student(80, 75, 70))  # Good student
+print(predictor.predict_student(50, 40, 35))  # At-risk student
+3. Automated Timetable Generator
+python
+from itertools import product
 
-def automated_pipeline(prompt):
-    """
-    Automates the entire process:
-    - Queries OpenAI and Cohere
-    - Compares outputs
-    - Generates and prints insights
-    """
-    print("=== AI Tools Integration Experiment ===")
-    print(f"Input Prompt: {prompt}\n")
+class TimetableGenerator:
+    def __init__(self):
+        self.courses = []
+        self.rooms = []
+        self.timeslots = []
+        self.faculty_availability = {}
+    
+    def add_course(self, name, faculty, students):
+        self.courses.append({
+            'name': name,
+            'faculty': faculty,
+            'students': students
+        })
+    
+    def add_room(self, name, capacity):
+        self.rooms.append({
+            'name': name,
+            'capacity': capacity
+        })
+    
+    def add_timeslot(self, day, time):
+        self.timeslots.append({
+            'day': day,
+            'time': time
+        })
+    
+    def set_faculty_availability(self, faculty, available_slots):
+        self.faculty_availability[faculty] = available_slots
+    
+    def generate(self):
+        # This is a simplified version - real implementation would use more advanced algorithms
+        timetable = []
+        
+        # Sort courses by number of students (descending) to place larger classes first
+        sorted_courses = sorted(self.courses, key=lambda x: -x['students'])
+        
+        for course in sorted_courses:
+            placed = False
+            faculty = course['faculty']
+            
+            # Get available slots for this faculty
+            available_slots = self.faculty_availability.get(faculty, self.timeslots)
+            
+            for slot in available_slots:
+                for room in self.rooms:
+                    if room['capacity'] >= course['students']:
+                        # Check if room is available at this timeslot
+                        conflict = False
+                        for scheduled in timetable:
+                            if (scheduled['room'] == room['name'] and 
+                                scheduled['day'] == slot['day'] and 
+                                scheduled['time'] == slot['time']):
+                                conflict = True
+                                break
+                        
+                        if not conflict:
+                            timetable.append({
+                                'course': course['name'],
+                                'faculty': faculty,
+                                'day': slot['day'],
+                                'time': slot['time'],
+                                'room': room['name']
+                            })
+                            placed = True
+                            break
+                if placed:
+                    break
+            
+            if not placed:
+                print(f"Warning: Could not place {course['name']}")
+        
+        return timetable
 
-    # Query OpenAI
-    print("Querying OpenAI...")
-    openai_output = query_openai(prompt)
-    print("OpenAI Output:\n", openai_output, "\n")
+# Example usage
+generator = TimetableGenerator()
 
-    # Query Cohere
-    print("Querying Cohere...")
-    cohere_output = query_cohere(prompt)
-    print("Cohere Output:\n", cohere_output, "\n")
+# Add rooms
+generator.add_room("A101", 50)
+generator.add_room("B202", 30)
+generator.add_room("C303", 70)
 
-    # Compare Outputs
-    comparison = compare_outputs(openai_output, cohere_output)
-    print("=== Comparison Metrics ===")
-    print(f"Similarity Percentage: {comparison['similarity_percentage']:.2f}%")
-    print(f"Sentiment (OpenAI): {comparison['sentiment_openai']:.3f}")
-    print(f"Sentiment (Cohere): {comparison['sentiment_cohere']:.3f}\n")
+# Add timeslots
+for day in ["Mon", "Tue", "Wed"]:
+    for time in ["9-11", "11-1", "2-4", "4-6"]:
+        generator.add_timeslot(day, time)
 
-    # Generate Insights
-    insights = generate_insights(comparison)
-    print("=== Generated Insights ===")
-    for insight in insights:
-        print("-", insight)
+# Add courses
+generator.add_course("Math 101", "Dr. Smith", 45)
+generator.add_course("Physics 201", "Dr. Johnson", 35)
+generator.add_course("CS 301", "Dr. Williams", 25)
 
-# =========================
-# RUN THE EXPERIMENT
-# =========================
+# Set faculty availability
+generator.set_faculty_availability("Dr. Smith", [{"day": "Mon", "time": "9-11"}, {"day": "Tue", "time": "2-4"}])
+generator.set_faculty_availability("Dr. Johnson", [{"day": "Mon", "time": "11-1"}, {"day": "Wed", "time": "9-11"}])
+generator.set_faculty_availability("Dr. Williams", [{"day": "Tue", "time": "11-1"}, {"day": "Wed", "time": "2-4"}])
 
-if __name__ == "__main__":
-    test_prompt = "Explain the benefits of using renewable energy sources."
-    automated_pipeline(test_prompt)
+# Generate timetable
+timetable = generator.generate()
+for entry in timetable:
+    print(f"{entry['course']} with {entry['faculty']} on {entry['day']} {entry['time']} in {entry['room']}")
 
-~~~
-# Explanation of Code Sections:
- # Imports:
-We import requests for API calls, textblob for sentiment analysis, and difflib to calculate similarity.
+# Concluation:
+The Python implementations provided for these college management system features demonstrate how modern technologies can transform educational administration. By integrating these advanced capabilities, institutions can:
 
- # API Configuration:
-We specify the API URLs and API keys for OpenAI and Cohere.
+Enhance Student Experience through AI-powered assistants that provide 24/7 support and predictive analytics that offer early intervention opportunities.
 
-# Functions:
+Optimize Administrative Efficiency with automated systems for timetable generation, digital notice distribution, and certificate issuance that reduce manual workloads.
 
-query_openai(prompt) → sends the prompt to OpenAI and returns the output.
+Improve Decision-Making using data-driven insights from predictive analytics and comprehensive tracking systems.
 
-query_cohere(prompt) → sends the prompt to Cohere and returns the output.
+Increase Engagement with role-specific dashboards and targeted communication channels that ensure relevant information reaches the right stakeholders.
 
-compare_outputs(output1, output2) → compares outputs by similarity and sentiment.
-
-generate_insights(comparison_data) → generates user-readable insights.
-
-automated_pipeline(prompt) → integrates all steps into an automated workflow.
-
-# Main Block:
-When the program runs, it uses a test prompt → queries both models → compares outputs → prints metrics and insights.
-
-## Sample Input & Output
-# Input Prompt:
-~~~
-Explain the benefits of using renewable energy sources.
-~~~
-# Example Output:
-~~~
-=== AI Tools Integration Experiment ===
-Input Prompt: Explain the benefits of using renewable energy sources.
-
-Querying OpenAI...
-OpenAI Output:
- Renewable energy sources provide sustainable alternatives to fossil fuels...
-
-Querying Cohere...
-Cohere Output:
- Renewable energy reduces pollution, promotes sustainability...
-
-=== Comparison Metrics ===
-Similarity Percentage: 70.45%
-Sentiment (OpenAI): 0.24
-Sentiment (Cohere): 0.28
-
-=== Generated Insights ===
-- Outputs differ significantly. Models interpret differently.
-- Cohere output has a more positive sentiment.
-~~~
-## Conclusion
-In this experiment, we developed Python code that integrates with multiple AI tools via their APIs. The code automates sending prompts, retrieving outputs, comparing them, and generating insights. This approach can be extended to evaluate multiple AI models, benchmark performance, or create AI-based decision support systems.
-
-
+Ensure Scalability through modular Python implementations that can integrate with existing systems or expand to accommodate growing institutional needs.
 
 
 
